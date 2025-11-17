@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>核心类测试</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .pass { color: #4ec9b0; }
+        .fail { color: #f48771; }
+        pre { background: #252526; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 核心类测试</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        import { Cell } from './src/core/Cell.js';
+        import { Prism } from './src/core/Prism.js';
+        import { Target } from './src/core/Target.js';
+        import { Robot } from './src/core/Robot.js';
+        
+        const results = document.getElementById('results');
+        let passed = 0, failed = 0;
+        
+        function test(name, fn) {
+            try {
+                fn();
+                results.innerHTML += `<div class="pass">✓ ${name}</div>`;
+                passed++;
+            } catch (e) {
+                results.innerHTML += `<div class="fail">✗ ${name}: ${e.message}</div>`;
+                failed++;
+            }
+        }
+        
+        // Cell 测试
+        test('Cell - 创建和基本功能', () => {
+            const cell = new Cell(5, 10);
+            if (cell.x !== 5 || cell.y !== 10) throw new Error('坐标错误');
+            if (!cell.isEmpty()) throw new Error('应该为空');
+        });
+        
+        test('Cell - 墙壁设置', () => {
+            const cell = new Cell(0, 0);
+            cell.setWalls(['top', 'right']);
+            if (!cell.hasWall('top')) throw new Error('top墙壁应该存在');
+            if (!cell.hasWall('right')) throw new Error('right墙壁应该存在');
+            if (cell.hasWall('bottom')) throw new Error('bottom墙壁不应存在');
+        });
+        
+        // Prism 测试
+        test('Prism - 创建', () => {
+            const prism = new Prism(3, 4, '\\', 'red');
+            if (prism.x !== 3 || prism.y !== 4) throw new Error('坐标错误');
+        });
+        
+        test('Prism - 折射（\\ 方向）', () => {
+            const prism = new Prism(0, 0, '\\', 'red');
+            if (prism.refract('left', 'blue') !== 'down') throw new Error('left应折射为down');
+            if (prism.refract('up', 'blue') !== 'right') throw new Error('up应折射为right');
+        });
+        
+        test('Prism - 折射（/ 方向）', () => {
+            const prism = new Prism(0, 0, '/', 'red');
+            if (prism.refract('left', 'blue') !== 'up') throw new Error('left应折射为up');
+            if (prism.refract('up', 'blue') !== 'left') throw new Error('up应折射为left');
+        });
+        
+        test('Prism - 同色直通', () => {
+            const prism = new Prism(0, 0, '\\', 'red');
+            if (prism.refract('left', 'red') !== 'left') throw new Error('同色应直通');
+        });
+        
+        // Target 测试
+        test('Target - 创建', () => {
+            const target = new Target(5, 5, 'circle', 'red', 'T1');
+            if (target.id !== 'T1') throw new Error('ID错误');
+        });
+        
+        test('Target - 颜色匹配', () => {
+            const target = new Target(5, 5, 'circle', 'red', 'T1');
+            if (!target.canAccept('red')) throw new Error('应该接受红色');
+            if (target.canAccept('blue')) throw new Error('不应该接受蓝色');
+        });
+        
+        test('Target - 彩色终点', () => {
+            const target = new Target(5, 5, 'circle', 'rainbow', 'T1');
+            if (!target.canAccept('red')) throw new Error('彩色应接受所有颜色');
+            if (!target.canAccept('blue')) throw new Error('彩色应接受所有颜色');
+        });
+        
+        // Robot 测试
+        test('Robot - 创建', () => {
+            const robot = new Robot('red', 1, 2);
+            if (robot.color !== 'red') throw new Error('颜色错误');
+            if (robot.x !== 1 || robot.y !== 2) throw new Error('位置错误');
+        });
+        
+        test('Robot - 移动', () => {
+            const robot = new Robot('red', 0, 0);
+            robot.moveTo(5, 10);
+            if (robot.x !== 5 || robot.y !== 10) throw new Error('移动后位置错误');
+        });
+        
+        test('Robot - 重置', () => {
+            const robot = new Robot('red', 0, 0);
+            robot.moveTo(5, 10);
+            robot.reset();
+            if (robot.x !== 0 || robot.y !== 0) throw new Error('重置后位置错误');
+        });
+        
+        test('Robot - 曼哈顿距离', () => {
+            const robot = new Robot('red', 0, 0);
+            const dist = robot.manhattanDistance(3, 4);
+            if (dist !== 7) throw new Error(`距离应为7，实际为${dist}`);
+        });
+        
+        results.innerHTML += `<hr><div>总计: ${passed + failed}, 通过: <span class="pass">${passed}</span>, 失败: <span class="fail">${failed}</span></div>`;
+    </script>
+</body>
+</html>
+

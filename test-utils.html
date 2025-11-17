@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2 工具类测试</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #252526;
+            border-left: 4px solid #007acc;
+            border-radius: 4px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #4ec9b0;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            background: #1e1e1e;
+            border-radius: 3px;
+        }
+        .test-case.pass {
+            border-left: 3px solid #4ec9b0;
+        }
+        .test-case.fail {
+            border-left: 3px solid #f48771;
+        }
+        .result {
+            font-family: monospace;
+            margin: 5px 0;
+        }
+        .pass { color: #4ec9b0; }
+        .fail { color: #f48771; }
+        .info { color: #569cd6; }
+        .warn { color: #dcdcaa; }
+        pre {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        .summary {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #252526;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .summary h3 {
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Robot Game V2 - 工具类单元测试</h1>
+    
+    <div class="summary">
+        <h3>测试总结</h3>
+        <div id="summary"></div>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <script type="module">
+        import { Rotator } from './src/utils/Rotator.js';
+        import { Encoder } from './src/utils/Encoder.js';
+        import CONSTANTS from './src/utils/Constants.js';
+        
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+        
+        const resultsDiv = document.getElementById('test-results');
+        const summaryDiv = document.getElementById('summary');
+        
+        function createSection(title) {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `<h2>${title}</h2>`;
+            resultsDiv.appendChild(section);
+            return section;
+        }
+        
+        function test(section, name, fn) {
+            totalTests++;
+            const testCase = document.createElement('div');
+            testCase.className = 'test-case';
+            
+            try {
+                const result = fn();
+                if (result === true || result === undefined) {
+                    passedTests++;
+                    testCase.classList.add('pass');
+                    testCase.innerHTML = `
+                        <div class="result pass">✓ ${name}</div>
+                    `;
+                } else {
+                    failedTests++;
+                    testCase.classList.add('fail');
+                    testCase.innerHTML = `
+                        <div class="result fail">✗ ${name}</div>
+                        <div class="result">Expected true, got: ${JSON.stringify(result)}</div>
+                    `;
+                }
+            } catch (error) {
+                failedTests++;
+                testCase.classList.add('fail');
+                testCase.innerHTML = `
+                    <div class="result fail">✗ ${name}</div>
+                    <div class="result">Error: ${error.message}</div>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+            
+            section.appendChild(testCase);
+            updateSummary();
+        }
+        
+        function assertEqual(actual, expected, message = '') {
+            const actualStr = JSON.stringify(actual);
+            const expectedStr = JSON.stringify(expected);
+            if (actualStr !== expectedStr) {
+                throw new Error(`${message}\nExpected: ${expectedStr}\nActual: ${actualStr}`);
+            }
+            return true;
+        }
+        
+        function updateSummary() {
+            const passRate = totalTests > 0 ? (passedTests / totalTests * 100).toFixed(1) : 0;
+            summaryDiv.innerHTML = `
+                <div class="result info">总计: ${totalTests}</div>
+                <div class="result pass">通过: ${passedTests}</div>
+                <div class="result fail">失败: ${failedTests}</div>
+                <div class="result warn">通过率: ${passRate}%</div>
+            `;
+        }
+        
+        // ==================== Rotator 测试 ====================
+        const rotatorSection = createSection('🔄 Rotator 旋转工具测试');
+        
+        test(rotatorSection, '旋转点坐标 - 0度', () => {
+            const result = Rotator.rotatePoint(2, 3, 0, 8);
+            return assertEqual(result, { x: 2, y: 3 });
+        });
+        
+        test(rotatorSection, '旋转点坐标 - 90度', () => {
+            const result = Rotator.rotatePoint(2, 3, 90, 8);
+            return assertEqual(result, { x: 4, y: 2 });
+        });
+        
+        test(rotatorSection, '旋转点坐标 - 180度', () => {
+            const result = Rotator.rotatePoint(2, 3, 180, 8);
+            return assertEqual(result, { x: 5, y: 4 });
+        });
+        
+        test(rotatorSection, '旋转点坐标 - 270度', () => {
+            const result = Rotator.rotatePoint(2, 3, 270, 8);
+            return assertEqual(result, { x: 3, y: 5 });
+        });
+        
+        test(rotatorSection, '旋转分光镜方向 - \\ 旋转90度', () => {
+            const result = Rotator.rotatePrismDirection('\\', 90);
+            return assertEqual(result, '/');
+        });
+        
+        test(rotatorSection, '旋转分光镜方向 - / 旋转90度', () => {
+            const result = Rotator.rotatePrismDirection('/', 90);
+            return assertEqual(result, '\\');
+        });
+        
+        test(rotatorSection, '旋转分光镜方向 - \\ 旋转180度', () => {
+            const result = Rotator.rotatePrismDirection('\\', 180);
+            return assertEqual(result, '\\');
+        });
+        
+        test(rotatorSection, '旋转移动方向 - up 旋转90度', () => {
+            const result = Rotator.rotateDirection('up', 90);
+            return assertEqual(result, 'right');
+        });
+        
+        test(rotatorSection, '旋转移动方向 - right 旋转90度', () => {
+            const result = Rotator.rotateDirection('right', 90);
+            return assertEqual(result, 'down');
+        });
+        
+        test(rotatorSection, '旋转墙壁位置 - top 旋转90度', () => {
+            const result = Rotator.rotateWallSide('top', 90);
+            return assertEqual(result, 'right');
+        });
+        
+        test(rotatorSection, '计算旋转角度 - 左上到右下', () => {
+            const result = Rotator.calculateRotationAngle({x: 0, y: 0}, {x: 7, y: 7});
+            return assertEqual(result, 180);
+        });
+        
+        test(rotatorSection, '计算旋转角度 - 左上到左下', () => {
+            const result = Rotator.calculateRotationAngle({x: 0, y: 0}, {x: 0, y: 7});
+            return assertEqual(result, 270);
+        });
+        
+        // ==================== Encoder 测试 ====================
+        const encoderSection = createSection('🔢 Encoder 编码解码测试');
+        
+        test(encoderSection, '编码小棋盘 - 编号3面0', () => {
+            const result = Encoder.encodeSmallBoard(3, 0);
+            return assertEqual(result, '6');
+        });
+        
+        test(encoderSection, '编码小棋盘 - 编号7面1', () => {
+            const result = Encoder.encodeSmallBoard(7, 1);
+            return assertEqual(result, 'F');
+        });
+        
+        test(encoderSection, '解码小棋盘 - 6', () => {
+            const result = Encoder.decodeSmallBoard('6');
+            return assertEqual(result, { boardId: 3, faceId: 0 });
+        });
+        
+        test(encoderSection, '解码小棋盘 - F', () => {
+            const result = Encoder.decodeSmallBoard('F');
+            return assertEqual(result, { boardId: 7, faceId: 1 });
+        });
+        
+        test(encoderSection, '编码大棋盘配置', () => {
+            const boards = [
+                { boardId: 3, faceId: 0 },
+                { boardId: 5, faceId: 1 },
+                { boardId: 2, faceId: 0 },
+                { boardId: 7, faceId: 1 }
+            ];
+            const result = Encoder.encodeBoardConfig(boards);
+            return assertEqual(result, '6B4F');
+        });
+        
+        test(encoderSection, '解码大棋盘配置', () => {
+            const result = Encoder.decodeBoardConfig('6B4F');
+            const expected = [
+                { boardId: 3, faceId: 0, position: 'topLeft' },
+                { boardId: 5, faceId: 1, position: 'topRight' },
+                { boardId: 2, faceId: 0, position: 'bottomLeft' },
+                { boardId: 7, faceId: 1, position: 'bottomRight' }
+            ];
+            return assertEqual(result, expected);
+        });
+        
+        test(encoderSection, '编码单个位置 - (5, 10)', () => {
+            const result = Encoder.encodePosition(5, 10);
+            return assertEqual(result, '5A');
+        });
+        
+        test(encoderSection, '编码单个位置 - (15, 15)', () => {
+            const result = Encoder.encodePosition(15, 15);
+            return assertEqual(result, 'FF');
+        });
+        
+        test(encoderSection, '解码单个位置 - 5A', () => {
+            const result = Encoder.decodePosition('5A');
+            return assertEqual(result, { x: 5, y: 10 });
+        });
+        
+        test(encoderSection, '编码棋子位置', () => {
+            const positions = {
+                red: { x: 1, y: 2 },
+                yellow: { x: 14, y: 1 },
+                blue: { x: 1, y: 14 },
+                green: { x: 14, y: 14 }
+            };
+            const result = Encoder.encodeRobotPositions(positions);
+            return assertEqual(result, '12E11EEE');
+        });
+        
+        test(encoderSection, '解码棋子位置', () => {
+            const result = Encoder.decodeRobotPositions('12E11EEE');
+            const expected = {
+                red: { x: 1, y: 2 },
+                yellow: { x: 14, y: 1 },
+                blue: { x: 1, y: 14 },
+                green: { x: 14, y: 14 }
+            };
+            return assertEqual(result, expected);
+        });
+        
+        test(encoderSection, '编码完整游戏', () => {
+            const positions = {
+                red: { x: 1, y: 2 },
+                yellow: { x: 14, y: 1 },
+                blue: { x: 1, y: 14 },
+                green: { x: 14, y: 14 }
+            };
+            const result = Encoder.encodeGame('6B4F', positions);
+            return assertEqual(result, '6B4F12E11EEE');
+        });
+        
+        test(encoderSection, '解码完整游戏', () => {
+            const result = Encoder.decodeGame('6B4F12E11EEE');
+            const expectedBoard = [
+                { boardId: 3, faceId: 0, position: 'topLeft' },
+                { boardId: 5, faceId: 1, position: 'topRight' },
+                { boardId: 2, faceId: 0, position: 'bottomLeft' },
+                { boardId: 7, faceId: 1, position: 'bottomRight' }
+            ];
+            const expectedPos = {
+                red: { x: 1, y: 2 },
+                yellow: { x: 14, y: 1 },
+                blue: { x: 1, y: 14 },
+                green: { x: 14, y: 14 }
+            };
+            return assertEqual(result.boardConfig, expectedBoard) && 
+                   assertEqual(result.robotPositions, expectedPos);
+        });
+        
+        test(encoderSection, '验证游戏编码 - 有效编码', () => {
+            const result = Encoder.validateGameCode('6B4F12E11EEE');
+            return assertEqual(result.valid, true) && assertEqual(result.errors, []);
+        });
+        
+        test(encoderSection, '验证游戏编码 - 无效格式', () => {
+            const result = Encoder.validateGameCode('INVALID');
+            return result.valid === false && result.errors.length > 0;
+        });
+        
+        test(encoderSection, '检测中央区域 - (7, 7)', () => {
+            const result = Encoder.isInCentralGap(7, 7);
+            return assertEqual(result, true);
+        });
+        
+        test(encoderSection, '检测中央区域 - (6, 7)', () => {
+            const result = Encoder.isInCentralGap(6, 7);
+            return assertEqual(result, false);
+        });
+        
+        // ==================== 集成测试 ====================
+        const integrationSection = createSection('🔗 集成测试');
+        
+        test(integrationSection, '编码后解码应得到原始数据', () => {
+            const original = {
+                boardConfig: [
+                    { boardId: 2, faceId: 1 },
+                    { boardId: 4, faceId: 0 },
+                    { boardId: 6, faceId: 1 },
+                    { boardId: 1, faceId: 0 }
+                ],
+                positions: {
+                    red: { x: 0, y: 0 },
+                    yellow: { x: 15, y: 0 },
+                    blue: { x: 0, y: 15 },
+                    green: { x: 15, y: 15 }
+                }
+            };
+            
+            const boardCode = Encoder.encodeBoardConfig(original.boardConfig);
+            const gameCode = Encoder.encodeGame(boardCode, original.positions);
+            const decoded = Encoder.decodeGame(gameCode);
+            
+            // 验证棋盘配置
+            for (let i = 0; i < 4; i++) {
+                if (decoded.boardConfig[i].boardId !== original.boardConfig[i].boardId ||
+                    decoded.boardConfig[i].faceId !== original.boardConfig[i].faceId) {
+                    throw new Error('Board config mismatch');
+                }
+            }
+            
+            // 验证棋子位置
+            return assertEqual(decoded.robotPositions, original.positions);
+        });
+        
+        test(integrationSection, '旋转后再旋转回来应得到原始坐标', () => {
+            const original = { x: 3, y: 5 };
+            const rotated90 = Rotator.rotatePoint(original.x, original.y, 90, 8);
+            const rotated180 = Rotator.rotatePoint(rotated90.x, rotated90.y, 90, 8);
+            const rotated270 = Rotator.rotatePoint(rotated180.x, rotated180.y, 90, 8);
+            const back = Rotator.rotatePoint(rotated270.x, rotated270.y, 90, 8);
+            
+            return assertEqual(back, original);
+        });
+        
+        console.log(`总计: ${totalTests}, 通过: ${passedTests}, 失败: ${failedTests}`);
+    </script>
+</body>
+</html>
+

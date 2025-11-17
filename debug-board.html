@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Board Debug</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    .board { display: inline-block; border: 2px solid #000; }
+    .row { display: flex; }
+    .cell {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      position: relative;
+    }
+    .cell.blocked { background: #999; }
+    .cell.target { background: #4CAF50; color: white; }
+    .cell.prism { background: #FF9800; }
+    .cell.wall-top { border-top: 3px solid #000; }
+    .cell.wall-right { border-right: 3px solid #000; }
+    .cell.wall-bottom { border-bottom: 3px solid #000; }
+    .cell.wall-left { border-left: 3px solid #000; }
+    .info { margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>Board Debug Visualization</h1>
+  <div id="info" class="info"></div>
+  <div id="board" class="board"></div>
+  
+  <script type="module">
+    import { SmallBoard } from './v2/src/core/SmallBoard.js';
+    import { Board } from './v2/src/core/Board.js';
+    import CONSTANTS from './v2/src/utils/Constants.js';
+    
+    // 创建简单棋盘
+    const smallBoardData = {
+      id: 0,
+      color: 'red',
+      originalGap: { x: 0, y: 0 },
+      faces: [
+        {
+          id: 0,
+          walls: [],
+          prisms: [],
+          targets: [
+            { x: 6, y: 6, shape: 'circle', color: 'rainbow', id: 'target-0' }
+          ]
+        }
+      ]
+    };
+    
+    const smallBoard = new SmallBoard(smallBoardData);
+    const emptyBoards = ['yellow', 'blue', 'green'].map((color, idx) => {
+      return new SmallBoard({
+        id: idx + 1,
+        color: color,
+        originalGap: { x: 0, y: 0 },
+        faces: [{ id: 0, walls: [], prisms: [], targets: [] }]
+        });
+    });
+    
+    const allBoards = [smallBoard, ...emptyBoards];
+    const config = [
+      { boardId: 0, faceId: 0 },
+      { boardId: 1, faceId: 0 },
+      { boardId: 2, faceId: 0 },
+      { boardId: 3, faceId: 0 }
+    ];
+    
+    const board = new Board(config, allBoards);
+    
+    // 显示信息
+    const targets = board.getAllTargets();
+    document.getElementById('info').innerHTML = `
+      <strong>Targets:</strong> ${targets.map(t => `(${t.x},${t.y}) ${t.color} ${t.shape}`).join(', ')}<br>
+      <strong>Central Area:</strong> x[${CONSTANTS.CENTRAL_BLOCKED.x}], y[${CONSTANTS.CENTRAL_BLOCKED.y}]<br>
+      <strong>Board Size:</strong> ${board.size}×${board.size}
+    `;
+    
+    // 绘制棋盘
+    const boardEl = document.getElementById('board');
+    for (let y = 0; y < board.size; y++) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      
+      for (let x = 0; x < board.size; x++) {
+        const cell = board.getCell(x, y);
+        const cellEl = document.createElement('div');
+        cellEl.className = 'cell';
+        cellEl.textContent = `${x},${y}`;
+        
+        if (board.isInCentralArea(x, y)) {
+          cellEl.classList.add('blocked');
+          cellEl.textContent = 'X';
+        }
+        
+        if (cell) {
+          if (cell.hasWall('top')) cellEl.classList.add('wall-top');
+          if (cell.hasWall('right')) cellEl.classList.add('wall-right');
+          if (cell.hasWall('bottom')) cellEl.classList.add('wall-bottom');
+          if (cell.hasWall('left')) cellEl.classList.add('wall-left');
+          
+          if (cell.hasTarget()) {
+            cellEl.classList.add('target');
+            cellEl.textContent = 'T';
+          }
+          
+          if (cell.hasPrism()) {
+            cellEl.classList.add('prism');
+            cellEl.textContent = 'P';
+          }
+        }
+        
+        row.appendChild(cellEl);
+      }
+      
+      boardEl.appendChild(row);
+    }
+  </script>
+</body>
+</html>
+

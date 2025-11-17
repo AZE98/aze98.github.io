@@ -1,0 +1,506 @@
+{
+  "id": 1,
+  "color": "red",
+  "originalGap": {
+    "x": 0,
+    "y": 0
+  },
+  "faces": [
+    {
+      "id": 0,
+      "name": "Face A",
+      "walls": [
+        {
+          "x": 0,
+          "y": 0,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "sides": [
+            "left",
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "sides": [
+            "bottom",
+            "left"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "sides": [
+            "right",
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "sides": [
+            "left",
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        }
+      ],
+      "prisms": [],
+      "targets": [
+        {
+          "x": 0,
+          "y": 2,
+          "shape": "square",
+          "color": "yellow",
+          "id": "B1F0T1"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "shape": "hexagon",
+          "color": "blue",
+          "id": "B1F0T2"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "shape": "circle",
+          "color": "green",
+          "id": "B1F0T3"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "shape": "triangle",
+          "color": "red",
+          "id": "B1F0T4"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Face B",
+      "walls": [
+        {
+          "x": 0,
+          "y": 0,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "sides": [
+            "top",
+            "bottom"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "sides": [
+            "left",
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "sides": [
+            "top",
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        }
+      ],
+      "prisms": [],
+      "targets": [
+        {
+          "x": 6,
+          "y": 1,
+          "shape": "square",
+          "color": "yellow",
+          "id": "B1F1T1"
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "shape": "triangle",
+          "color": "red",
+          "id": "B1F1T2"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "shape": "circle",
+          "color": "green",
+          "id": "B1F1T3"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "shape": "hexagon",
+          "color": "blue",
+          "id": "B1F1T4"
+        }
+      ]
+    }
+  ]
+}

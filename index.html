@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ricochet Robots V2 - 四棋子折射游戏</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 30px;
+      text-align: center;
+    }
+    
+    header h1 {
+      font-size: 24px;
+      margin-bottom: 3px;
+    }
+    
+    header p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 320px 700px 1fr;
+      gap: 20px;
+      padding: 20px;
+      height: calc(100vh - 120px);
+      overflow: hidden;
+    }
+    
+    .left-panel, .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .panel {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .panel h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .board-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #e9ecef;
+    }
+    
+    canvas {
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #495057;
+      font-size: 14px;
+    }
+    
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    .btn-block {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .robot-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .robot-item {
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+      border: 2px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .robot-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .robot-icon.red { background: #e74c3c; }
+    .robot-icon.yellow { background: #f39c12; }
+    .robot-icon.blue { background: #3498db; }
+    .robot-icon.green { background: #2ecc71; }
+    
+    .robot-pos {
+      font-size: 12px;
+      color: #6c757d;
+    }
+    
+    .target-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    
+    .target-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .target-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    .target-list::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+    
+    .target-list::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .target-item {
+      padding: 8px 10px;
+      background: white;
+      border-radius: 4px;
+      border: 2px solid #e9ecef;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .target-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+    
+    .target-item.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    
+    .target-shape {
+      font-size: 20px;
+      min-width: 24px;
+      text-align: center;
+    }
+    
+    .target-info {
+      font-size: 12px;
+      color: #6c757d;
+      flex: 1;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .stat-item {
+      background: white;
+      padding: 15px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+    
+    .history-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    /* 解决方案样式 */
+    .animation-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .animation-status {
+      flex: 1;
+      text-align: right;
+      font-size: 14px;
+      color: #495057;
+      font-weight: 500;
+      min-width: 120px;
+    }
+    
+    .solution-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .tab-btn {
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: #6c757d;
+      transition: all 0.2s;
+    }
+    
+    .tab-btn:hover {
+      color: #495057;
+    }
+    
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+    
+    .solution-content {
+      position: relative;
+    }
+    
+    .solution-tab-content {
+      display: none;
+    }
+    
+    .solution-tab-content.active {
+      display: block;
+    }
+    
+    .solution-simple {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .arrow-step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    
+    .arrow-step.red { background: #DF2822; }
+    .arrow-step.yellow { background: #EFC71E; }
+    .arrow-step.blue { background: #3E577F; }
+    .arrow-step.green { background: #3B991E; }
+    
+    .solution-detailed {
+      background: #f8f9fa;
+      border-radius: 4px;
+      padding: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .step-item {
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      border-left: 4px solid #667eea;
+      font-size: 13px;
+    }
+    
+    .step-header {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #495057;
+    }
+    
+    .step-info {
+      color: #6c757d;
+      font-size: 12px;
+    }
+    
+    .solution-summary {
+      background: #e7f3ff;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #495057;
+    }
+    
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .history-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    .history-list::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+    
+    .history-list::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .history-item {
+      background: white;
+      padding: 8px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      border-left: 4px solid #667eea;
+      font-size: 13px;
+    }
+    
+    .history-round {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+    
+    .history-detail {
+      font-size: 11px;
+      color: #6c757d;
+    }
+    
+    /* 左侧面板样式 */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow: hidden;
+    }
+    
+    .left-panel .panel {
+      flex-shrink: 0;
+    }
+    
+    .left-panel .panel.target-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    /* 右侧面板样式 */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow: hidden;
+    }
+    
+    .right-panel .panel {
+      flex-shrink: 0;
+    }
+    
+    .right-panel .panel.history-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+    
+    /* 游戏操作卡片 */
+    .game-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .game-actions .btn {
+      flex: 1;
+    }
+    
+    /* 隐藏元素 */
+    .hidden {
+      display: none !important;
+    }
+    
+    .status-message {
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .status-message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .status-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+    
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 1200px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 Ricochet Robots V2</h1>
+      <p>四棋子滑动折射游戏 - 找到最短路径！</p>
+    </header>
+    
+    <div class="main-content">
+      <!-- 左侧面板：游戏配置 -->
+      <div class="left-panel">
+        <div class="panel">
+          <h2>⚙️ 游戏配置</h2>
+          <div id="statusMessage"></div>
+          
+          <div class="input-group">
+            <label>游戏编码（12位十六进制）</label>
+            <input type="text" id="gameCode" placeholder="例如: 6B4F12E11EEE" maxlength="12">
+          </div>
+          
+          <button class="btn btn-primary btn-block" id="loadGameBtn">
+            加载游戏
+          </button>
+          <button class="btn btn-secondary btn-block" id="randomGameBtn">
+            随机游戏
+          </button>
+        </div>
+        
+        <div class="panel target-panel">
+          <h2>🎯 可选终点</h2>
+          <div class="target-list" id="targetList">
+            <div class="loading">请先加载游戏</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 中间：游戏棋盘 -->
+      <div class="board-container">
+        <canvas id="gameBoard"></canvas>
+      </div>
+      
+      <!-- 右侧面板：结果和历史 -->
+      <div class="right-panel">
+        <div class="panel">
+          <h2>🎮 游戏操作</h2>
+          <div class="game-actions">
+            <button class="btn btn-success" id="solveBtn" disabled>
+              🔍 寻找路径
+            </button>
+            <button class="btn btn-secondary" id="resetBtn" disabled>
+              🔄 重置游戏
+            </button>
+          </div>
+        </div>
+        
+        <div class="panel" id="solutionPanel" style="display: none;">
+          <h2>✅ 解决方案</h2>
+          
+          <div class="animation-controls">
+            <button class="btn btn-primary" id="playAnimationBtn">
+              ▶️ 播放动画
+            </button>
+            <button class="btn btn-secondary" id="pauseAnimationBtn" disabled>
+              ⏸️ 暂停
+            </button>
+            <button class="btn btn-secondary" id="replayAnimationBtn" disabled>
+              🔄 重播
+            </button>
+            <button class="btn btn-success" id="applyMoveBtn" disabled>
+              ✅ 应用移动
+            </button>
+            <div class="animation-status">
+              <span id="animationProgress">准备播放</span>
+            </div>
+          </div>
+          
+          <div class="solution-tabs">
+            <button class="tab-btn active" data-tab="simple">简洁版</button>
+            <button class="tab-btn" data-tab="detailed">完整版</button>
+          </div>
+          
+          <div class="solution-content">
+            <div class="solution-tab-content active" id="simpleSolution">
+              <!-- 简洁版：箭头列表 -->
+            </div>
+            <div class="solution-tab-content" id="detailedSolution">
+              <!-- 完整版：详细步骤 -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel history-panel">
+          <h2>📝 行动记录</h2>
+          <div class="history-list" id="historyList">
+            <div class="loading">暂无历史记录</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
+

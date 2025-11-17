@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏配置器 - Ricochet Robots V2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 100%;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin: 10px 0;
+      font-size: 24px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+
+    .instruction {
+      text-align: center;
+      color: white;
+      margin: 5px 0;
+      font-size: 13px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .main-layout {
+      flex: 1;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    #mainBoard {
+      border: 2px solid #42311B;
+      border-radius: 4px;
+      cursor: pointer;
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    @media (max-width: 768px) {
+      .board-wrapper {
+        padding: 10px;
+        max-width: calc(100vw - 20px);
+      }
+    }
+
+    .robot-panel {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      min-width: 250px;
+      max-width: 300px;
+      display: none;
+    }
+
+    .robot-panel.active {
+      display: block;
+    }
+
+    .robot-panel h3 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .robot-item {
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 2px solid #dee2e6;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .robot-item:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .robot-item.completed {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .robot-item.active {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .robot-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      body {
+        padding: 5px;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin: 5px 0;
+      }
+
+      .instruction {
+        font-size: 11px;
+        padding: 5px;
+      }
+
+      .main-layout {
+        flex-direction: column;
+        gap: 10px;
+        padding: 5px;
+      }
+
+      .board-wrapper {
+        padding: 10px;
+      }
+
+      .robot-panel {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+      }
+
+      .progress-indicator {
+        margin-bottom: 10px;
+      }
+
+      .progress-step {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .main-layout {
+        padding: 0;
+      }
+    }
+
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 768px) {
+      .modal {
+        padding: 10px;
+      }
+
+      .modal-content {
+        padding: 15px;
+        max-height: 85vh;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    /* 颜色选择 */
+    .color-selection {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .color-option {
+      padding: 20px;
+      border: 3px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .color-option:hover:not(.disabled) {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .color-option.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .color-option.red { background: #DF2822; }
+    .color-option.yellow { background: #EFC71E; }
+    .color-option.blue { background: #3E577F; }
+    .color-option.green { background: #3B991E; }
+
+    /* 棋盘选择 */
+    .board-selection {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .board-selection {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    .board-option {
+      background: #f8f9fa;
+      border: 3px solid #dee2e6;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .board-option:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .board-option.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .board-option-header {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    .board-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .board-preview canvas {
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .board-info {
+      text-align: center;
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    /* 棋子位置选择 */
+    .robot-position-grid {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .robot-position-grid canvas {
+      border: 2px solid #42311B;
+      border-radius: 4px;
+      cursor: crosshair;
+    }
+
+    .robot-info {
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .robot-color-badge {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 10px;
+      vertical-align: middle;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* 按钮 */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-block {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* 进度指示器 */
+    .progress-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-shrink: 0;
+    }
+
+    .progress-step {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      background: #dee2e6;
+      transition: all 0.3s;
+    }
+
+    .progress-step.completed {
+      background: #28a745;
+    }
+
+    .progress-step.active {
+      background: #667eea;
+      transform: scale(1.15);
+    }
+
+    @media (max-width: 768px) {
+      .progress-step {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+    }
+
+    /* 最终结果 */
+    .result-panel {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .result-code {
+      background: white;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      text-align: center;
+      margin: 15px 0;
+      user-select: all;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 游戏配置器</h1>
+    
+    <div class="instruction" id="instruction">
+      <strong>配置步骤：</strong> 点击四个区域，依次选择小棋盘
+    </div>
+
+    <div class="progress-indicator" id="progressIndicator">
+      <div class="progress-step" data-step="0">1</div>
+      <div class="progress-step" data-step="1">2</div>
+      <div class="progress-step" data-step="2">3</div>
+      <div class="progress-step" data-step="3">4</div>
+    </div>
+
+    <div class="main-layout">
+      <div class="board-wrapper">
+        <canvas id="mainBoard"></canvas>
+      </div>
+
+      <!-- 棋子设置面板 -->
+      <div class="robot-panel" id="robotPanel">
+        <h3>🎯 设置棋子起始位置</h3>
+        <div id="robotList">
+          <!-- 动态生成 -->
+        </div>
+        <div class="result-panel" id="resultPanel" style="display: none;">
+          <h3 style="text-align: center; margin: 15px 0;">✅ 配置完成！</h3>
+          <div class="result-code" id="gameCode">-</div>
+          <div class="action-buttons">
+            <button class="btn btn-success btn-block" id="playGameBtn">
+              🎮 开始游戏
+            </button>
+            <button class="btn btn-primary btn-block" id="copyCodeBtn">
+              📋 复制编码
+            </button>
+            <button class="btn btn-primary btn-block" id="resetBtn">
+              🔄 重新配置
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 颜色选择模态框 -->
+  <div class="modal" id="colorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>选择小棋盘颜色</h2>
+        <button class="close-btn" id="closeColorModal">&times;</button>
+      </div>
+      <div class="color-selection" id="colorSelection">
+        <!-- 动态生成 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 棋盘选择模态框 -->
+  <div class="modal" id="boardModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="boardModalTitle">选择棋盘</h2>
+        <button class="close-btn" id="closeBoardModal">&times;</button>
+      </div>
+      <div class="board-selection" id="boardSelection">
+        <!-- 动态生成 -->
+      </div>
+      <button class="btn btn-primary btn-block" id="confirmBoardBtn" disabled>
+        确认选择
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="./game-config-interactive.js"></script>
+</body>
+</html>

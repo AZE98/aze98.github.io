@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>分光镜折射测试</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    .pass { background: #d4edda; }
+    .fail { background: #f8d7da; }
+    .diagram { 
+      display: inline-block; 
+      margin: 10px 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔬 分光镜折射逻辑测试</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    import { Prism } from './src/core/Prism.js';
+
+    const results = [];
+
+    function test(name, fn) {
+      try {
+        fn();
+        results.push({ name, pass: true });
+        console.log('✓', name);
+      } catch (error) {
+        results.push({ name, pass: false, error: error.message });
+        console.error('✗', name, error);
+      }
+    }
+
+    function assert(condition, message) {
+      if (!condition) throw new Error(message);
+    }
+
+    // 测试 \ 分光镜
+    console.log('\n=== 测试 \\ 分光镜 ===\n');
+
+    test('\\分光镜: 向右→向下', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.calculateRefraction('right');
+      assert(result === 'down', `期望 down，实际 ${result}`);
+    });
+
+    test('\\分光镜: 向下→向右', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.calculateRefraction('down');
+      assert(result === 'right', `期望 right，实际 ${result}`);
+    });
+
+    test('\\分光镜: 向左→向上', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.calculateRefraction('left');
+      assert(result === 'up', `期望 up，实际 ${result}`);
+    });
+
+    test('\\分光镜: 向上→向左', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.calculateRefraction('up');
+      assert(result === 'left', `期望 left，实际 ${result}`);
+    });
+
+    // 测试 / 分光镜
+    console.log('\n=== 测试 / 分光镜 ===\n');
+
+    test('/分光镜: 向右→向上', () => {
+      const prism = new Prism(5, 5, '/', 'blue');
+      const result = prism.calculateRefraction('right');
+      assert(result === 'up', `期望 up，实际 ${result}`);
+    });
+
+    test('/分光镜: 向上→向右', () => {
+      const prism = new Prism(5, 5, '/', 'blue');
+      const result = prism.calculateRefraction('up');
+      assert(result === 'right', `期望 right，实际 ${result}`);
+    });
+
+    test('/分光镜: 向左→向下', () => {
+      const prism = new Prism(5, 5, '/', 'blue');
+      const result = prism.calculateRefraction('left');
+      assert(result === 'down', `期望 down，实际 ${result}`);
+    });
+
+    test('/分光镜: 向下→向左', () => {
+      const prism = new Prism(5, 5, '/', 'blue');
+      const result = prism.calculateRefraction('down');
+      assert(result === 'left', `期望 left，实际 ${result}`);
+    });
+
+    // 测试颜色匹配
+    console.log('\n=== 测试颜色匹配（直通） ===\n');
+
+    test('同色棋子直通: red棋子遇到red分光镜', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.refract('right', 'red');
+      assert(result === 'right', `期望 right（直通），实际 ${result}`);
+    });
+
+    test('异色棋子折射: blue棋子遇到red分光镜', () => {
+      const prism = new Prism(5, 5, '\\', 'red');
+      const result = prism.refract('right', 'blue');
+      assert(result === 'down', `期望 down（折射），实际 ${result}`);
+    });
+
+    // 显示结果
+    const resultsDiv = document.getElementById('results');
+    const passed = results.filter(r => r.pass).length;
+    const total = results.length;
+    
+    resultsDiv.innerHTML = `
+      <h2>测试结果: ${passed}/${total} 通过</h2>
+      ${results.map(r => `
+        <div class="test ${r.pass ? 'pass' : 'fail'}">
+          ${r.pass ? '✓' : '✗'} ${r.name}
+          ${r.error ? `<br><span style="color: red;">${r.error}</span>` : ''}
+        </div>
+      `).join('')}
+      
+      <h2>📐 折射图解</h2>
+      
+      <h3>反斜杠 \\ 分光镜 (左上→右下)</h3>
+      <div class="diagram">
+        向右 → \\  → 向下<br>
+        向下 → \\  → 向右<br>
+        向左 → \\  → 向上<br>
+        向上 → \\  → 向左
+      </div>
+      
+      <h3>正斜杠 / 分光镜 (左下→右上)</h3>
+      <div class="diagram">
+        向右 → /  → 向上<br>
+        向上 → /  → 向右<br>
+        向左 → /  → 向下<br>
+        向下 → /  → 向左
+      </div>
+      
+      <h2>💡 物理原理</h2>
+      <p>想象光线遇到镜面反射：</p>
+      <div class="diagram">
+        \\ 分光镜就像这样的镜面：<br>
+        <pre>
+          ↓     →
+           \\
+            \\
+        →    ↓
+        </pre>
+      </div>
+      <div class="diagram">
+        / 分光镜就像这样的镜面：<br>
+        <pre>
+        ↓    →
+          /
+         /
+        →   ↑
+        </pre>
+      </div>
+    `;
+
+    console.log(`\n测试完成: ${passed}/${total} 通过\n`);
+  </script>
+</body>
+</html>
+

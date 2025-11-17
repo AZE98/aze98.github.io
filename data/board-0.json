@@ -1,0 +1,511 @@
+{
+  "id": 0,
+  "color": "red",
+  "originalGap": {
+    "x": 0,
+    "y": 0
+  },
+  "faces": [
+    {
+      "id": 0,
+      "name": "Face A",
+      "walls": [
+        {
+          "x": 0,
+          "y": 0,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "sides": [
+            "left",
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        }
+      ],
+      "prisms": [
+        {
+          "x": 1,
+          "y": 4,
+          "direction": "\\",
+          "color": "yellow"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "direction": "\\",
+          "color": "blue"
+        }
+      ],
+      "targets": [
+        {
+          "x": 2,
+          "y": 1,
+          "shape": "square",
+          "color": "yellow",
+          "id": "B0F0T1"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "shape": "triangle",
+          "color": "red",
+          "id": "B0F0T2"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "shape": "circle",
+          "color": "green",
+          "id": "B0F0T3"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "shape": "hexagon",
+          "color": "blue",
+          "id": "B0F0T4"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Face B",
+      "walls": [
+        {
+          "x": 0,
+          "y": 0,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 0,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "sides": [
+            "left",
+            "top"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "sides": [
+            "bottom",
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "sides": [
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "sides": [
+            "top"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "sides": [
+            "top",
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "sides": [
+            "left",
+            "right"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "sides": [
+            "bottom",
+            "left"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "sides": [
+            "right"
+          ]
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "sides": [
+            "top",
+            "bottom"
+          ]
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "sides": [
+            "bottom"
+          ]
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "sides": [
+            "left",
+            "bottom"
+          ]
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "sides": [
+            "right",
+            "bottom"
+          ]
+        }
+      ],
+      "prisms": [],
+      "targets": [
+        {
+          "x": 4,
+          "y": 1,
+          "shape": "hexagon",
+          "color": "blue",
+          "id": "B0F1T1"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "shape": "square",
+          "color": "yellow",
+          "id": "B0F1T2"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "shape": "triangle",
+          "color": "red",
+          "id": "B0F1T3"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "shape": "circle",
+          "color": "green",
+          "id": "B0F1T4"
+        }
+      ]
+    }
+  ]
+}

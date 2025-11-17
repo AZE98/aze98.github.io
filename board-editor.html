@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小棋盘编辑器 - Ricochet Robots V2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+    }
+    
+    header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 300px 1fr 300px;
+      gap: 20px;
+      padding: 20px;
+    }
+    
+    .panel {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .panel h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 10px;
+    }
+    
+    .tool-section {
+      margin-bottom: 20px;
+    }
+    
+    .tool-section h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #6c757d;
+    }
+    
+    .tool-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .tool-btn {
+      padding: 10px;
+      border: 2px solid #dee2e6;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .tool-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    
+    .tool-btn.active {
+      border-color: #667eea;
+      background: #667eea;
+      color: white;
+    }
+    
+    .wall-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    
+    .shape-buttons, .color-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    
+    .prism-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+    }
+    
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #dee2e6;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .color-btn.red { background: #e74c3c; }
+    .color-btn.yellow { background: #f39c12; }
+    .color-btn.blue { background: #3498db; }
+    .color-btn.green { background: #2ecc71; }
+    .color-btn.rainbow { background: linear-gradient(45deg, #e74c3c, #f39c12, #2ecc71, #3498db); }
+    
+    .color-btn.active {
+      border-color: #000;
+      border-width: 3px;
+    }
+    
+    .board-editor {
+      background: white;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .grid-container {
+      display: inline-block;
+      border: 3px solid #333;
+    }
+    
+    .grid-row {
+      display: flex;
+      height: 50px;
+    }
+    
+    .grid-cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ddd;
+      position: relative;
+      background: white;
+    }
+    
+    .grid-cell:hover {
+      background: #f0f4ff;
+    }
+    
+    .grid-cell.gap {
+      background: #ffe6e6;
+    }
+    
+    /* 可点击的边缘区域 */
+    .cell-edge {
+      position: absolute;
+      cursor: pointer;
+      background: transparent;
+      transition: background 0.2s;
+      z-index: 10; /* 确保在其他元素之上 */
+    }
+    
+    .cell-edge:hover {
+      background: rgba(102, 126, 234, 0.4); /* hover时显示蓝色 */
+    }
+    
+    .cell-edge.top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+    }
+    
+    .cell-edge.right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 12px;
+    }
+    
+    .cell-edge.bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+    }
+    
+    .cell-edge.left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 12px;
+    }
+    
+    .cell-wall {
+      position: absolute;
+      background: #333;
+      pointer-events: none; /* 墙壁不拦截鼠标事件 */
+      z-index: 5;
+    }
+    
+    .cell-wall.top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+    
+    .cell-wall.right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 3px;
+    }
+    
+    .cell-wall.bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+    
+    .cell-wall.left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 3px;
+    }
+    
+    .cell-prism {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      font-weight: bold;
+      text-shadow: 0 0 3px rgba(255,255,255,0.8);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      pointer-events: none; /* 不拦截鼠标事件 */
+      z-index: 3;
+    }
+    
+    .cell-prism.red { 
+      color: #e74c3c;
+      background: rgba(231, 76, 60, 0.1);
+      border: 2px solid #e74c3c;
+    }
+    .cell-prism.yellow { 
+      color: #f39c12;
+      background: rgba(243, 156, 18, 0.1);
+      border: 2px solid #f39c12;
+    }
+    .cell-prism.blue { 
+      color: #3498db;
+      background: rgba(52, 152, 219, 0.1);
+      border: 2px solid #3498db;
+    }
+    .cell-prism.green { 
+      color: #2ecc71;
+      background: rgba(46, 204, 113, 0.1);
+      border: 2px solid #2ecc71;
+    }
+    
+    .cell-target {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      pointer-events: none; /* 不拦截鼠标事件 */
+      z-index: 3;
+    }
+    
+    .cell-coord {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 8px;
+      color: #999;
+      pointer-events: none; /* 不拦截鼠标事件 */
+      z-index: 2;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 600;
+    }
+    
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .json-output {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .face-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    
+    .face-tab {
+      flex: 1;
+      padding: 10px;
+      background: white;
+      border: 2px solid #dee2e6;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .face-tab.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    
+    .stats {
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .stats div {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .alert {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 12px;
+    }
+    
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    @media (max-width: 1200px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎨 小棋盘编辑器</h1>
+      <p>设计8×8小棋盘 - 墙壁、终点、分光镜</p>
+    </header>
+    
+    <div class="main-content">
+      <!-- 左侧：工具面板 -->
+      <div class="panel">
+        <h2>🛠️ 编辑工具</h2>
+        
+        <div class="tool-section">
+          <h3>基本信息</h3>
+          <div class="input-group">
+            <label>棋盘ID</label>
+            <input type="number" id="boardId" value="0" min="0" max="7">
+          </div>
+          <div class="input-group">
+            <label>棋盘颜色</label>
+            <select id="boardColor">
+              <option value="red">红色 (Red)</option>
+              <option value="yellow">黄色 (Yellow)</option>
+              <option value="blue">蓝色 (Blue)</option>
+              <option value="green">绿色 (Green)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="tool-section">
+          <h3>当前面</h3>
+          <div class="face-tabs">
+            <div class="face-tab active" data-face="0">正面 A</div>
+            <div class="face-tab" data-face="1">反面 B</div>
+          </div>
+        </div>
+        
+        <div class="tool-section">
+          <h3>编辑模式</h3>
+          <div class="tool-buttons">
+            <button class="tool-btn active" data-tool="wall">🧱 墙壁</button>
+            <button class="tool-btn" data-tool="target">🎯 终点</button>
+            <button class="tool-btn" data-tool="prism">💎 分光镜</button>
+            <button class="tool-btn" data-tool="erase">🗑️ 擦除</button>
+          </div>
+        </div>
+        
+        <div class="tool-section" id="wallOptions" style="display:none;">
+          <h3>墙壁设置</h3>
+          <p style="font-size: 12px; color: #6c757d; margin: 0;">点击格子的边缘来添加/移除墙壁</p>
+        </div>
+        
+        <div class="tool-section" id="targetOptions" style="display:none;">
+          <h3>终点形状</h3>
+          <div class="shape-buttons">
+            <button class="tool-btn" data-shape="circle">⭕ 圆</button>
+            <button class="tool-btn" data-shape="triangle">🔺 三角</button>
+            <button class="tool-btn" data-shape="square">⬛ 方</button>
+            <button class="tool-btn" data-shape="hexagon">⬢ 六角</button>
+          </div>
+          <h3 style="margin-top:10px;">终点颜色</h3>
+          <div class="color-buttons">
+            <button class="color-btn red" data-color="red"></button>
+            <button class="color-btn yellow" data-color="yellow"></button>
+            <button class="color-btn blue" data-color="blue"></button>
+            <button class="color-btn green" data-color="green"></button>
+          </div>
+          <div class="color-buttons" style="margin-top:5px;">
+            <button class="color-btn rainbow" data-color="rainbow" style="grid-column: span 4;"></button>
+          </div>
+        </div>
+        
+        <div class="tool-section" id="prismOptions" style="display:none;">
+          <h3>分光镜方向</h3>
+          <div class="prism-buttons">
+            <button class="tool-btn" data-prism-dir="\">\ 左上右下</button>
+            <button class="tool-btn" data-prism-dir="/">/ 左下右上</button>
+          </div>
+          <h3 style="margin-top:10px;">分光镜颜色</h3>
+          <div class="color-buttons">
+            <button class="color-btn red" data-prism-color="red"></button>
+            <button class="color-btn yellow" data-prism-color="yellow"></button>
+            <button class="color-btn blue" data-prism-color="blue"></button>
+            <button class="color-btn green" data-prism-color="green"></button>
+          </div>
+        </div>
+        
+        <div class="alert alert-info">
+          💡 提示：
+          <br>• 点击格子<strong>边缘</strong>添加/移除墙壁
+          <br>• 点击格子<strong>中心</strong>添加终点/分光镜
+          <br>• (0,0)是缺口，不可放置终点
+        </div>
+      </div>
+      
+      <!-- 中间：编辑区域 -->
+      <div class="board-editor">
+        <div class="grid-container" id="gridContainer">
+          <!-- 8×8格子将由JS生成 -->
+        </div>
+      </div>
+      
+      <!-- 右侧：数据面板 -->
+      <div class="panel">
+        <h2>📊 统计信息</h2>
+        <div class="stats" id="stats">
+          <div><span>墙壁数量:</span><span id="wallCount">0</span></div>
+          <div><span>分光镜:</span><span id="prismCount">0</span></div>
+          <div><span>终点:</span><span id="targetCount">0</span></div>
+        </div>
+        
+        <h2>💾 导出数据</h2>
+        <button class="btn btn-primary" id="exportBtn">导出JSON</button>
+        <button class="btn btn-secondary" id="copyBtn">复制到剪贴板</button>
+        <button class="btn btn-danger" id="clearBtn">清空棋盘</button>
+        
+        <h2 style="margin-top:20px;">📄 JSON数据</h2>
+        <div class="json-output" id="jsonOutput">
+          编辑棋盘后，JSON数据将显示在这里
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="./board-editor.js"></script>
+</body>
+</html>
+
